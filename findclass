@@ -15,7 +15,14 @@ elif (($# == 2)); then
 elif (($# == 1)); then
     CLASS=$1
 elif (($# == 0)); then
-    echo USAGE: $0 "[dir] [file_pattern] <class_pattern>"
+    echo -e " 
+Search directory for class or struct.
+
+USAGE: $(basename $0) [dir] [file_pattern] <class_pattern>
+    dir\t\t\t Directory to search. ./ if omitted.
+    file_pattern\t Source file to search, can be '*.h|*.cpp'. *.h if omitted.
+    class_pattern\t Symbol of class or struct to search
+"
     exit 1
 fi
 
