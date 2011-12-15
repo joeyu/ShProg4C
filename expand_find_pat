@@ -1,0 +1,16 @@
+#!/usr/bin/gawk -f
+#
+#gawk program to expand file patterns like '*.h|*.c|*.cpp' to corresponding 
+#pairs of '-name -print' for find shell program
+
+BEGIN {
+    FS="|";
+}
+{
+    file="-name "$1" -print"; 
+    for(i=2;i<=NF;i++) 
+        {file=file" -or -name "$i" -print"}
+} 
+END {
+    print file
+}

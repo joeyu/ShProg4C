@@ -1,6 +1,8 @@
 #!/bin/bash
 
+# Prohibit *, ? file expansion 
 set -o noglob
+
 DIR='./'
 FILE='*.h'
 if (($# == 3)); then
@@ -17,32 +19,30 @@ elif (($# == 0)); then
     exit 1
 fi
 
+FILE=$(echo $FILE |expand_find_pat)
 
-#echo $DIR
-#echo $FILE
-#echo $CLASS
-
-FILE=$(echo $FILE |gawk -F'|' '{file="-name "$1" -print"; for(i=2;i<=NF;i++) {file=file" -or -name "$i" -print";}} END{print file}')
-
-#echo $FILE
-#exit
 GREP_RE="\(class\|struct\)[[:space:]]\+\([[:alnum:]_]\+[[:space:]]\+\)\?${CLASS}[[:space:]]*\([:{]\|$\)"
-#echo $GREP_RE
-#exit
 
-#echo "find $DIR $FILE |xargs grep $GREP_RE -n --color |sed 's/:/ +/'"
-#OUTPUT=$(find $DIR $FILE |xargs grep $GREP_RE -n |sed 's/:/ +/; s/^\([^:]\+\)/\\\\e[0;32m\1\\\\e[0;37m/')
-#OUTPUT=$(find $DIR $FILE |xargs grep $GREP_RE)
-find $DIR $FILE |xargs grep $GREP_RE -n | gawk -v class=$CLASS -F: 'BEGIN{classrep="\\<"class"\\>"} {for(i=3;i<=NF;i++){line=file$i} gsub(classrep,"\033[0;31m"class"\033[0;37m",line); print "\033[0;32m"$1"\033[0;34m +"$2"\033[0;37m: "line}'
-#find $DIR $FILE |xargs grep $GREP_RE -n --color | sed 's/:/ +/'
-#
-#if [ OUTPUT == "" ]; then
-#    exit 0
-#fi
-#
-#FILE_INFO=$(echo $OUTPUT |sed "s/^\([^:]*\)/\\\\e[0;32m\1\\\\e[0;37m/")
-#
-#
-#printf  "%b\n" "$OUTPUT"
-#echo -e $OUTPUT
+
+OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n)
+if [ $OUTPUT == "" ]; then
+    exit 0
+fi
+
+# Change line form for vi input, and highlight the file path, line and class of grep
+echo "$OUTPUT" | gawk -v class=$CLASS -F: \
+    'BEGIN{\
+        classrep="\\<"class"\\>"; \
+        red="\033[0;31m"; \
+        green="\033[0;32m"; \
+        blue="\033[0;34m"; \
+        white="\033[0;37m"\
+    } \
+    {\
+        for(i=3;i<=NF;i++)\
+            {line=file$i} \
+        gsub(classrep,red class white, line); \
+        print green $1 blue " +" $2 white" : "line\
+    }'
+
 tput sgr0
