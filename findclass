@@ -32,7 +32,7 @@ GREP_RE="\(class\|struct\)[[:space:]]\+\([[:alnum:]_]\+[[:space:]]\+\)\?${CLASS}
 
 
 OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n)
-if [ $OUTPUT == "" ]; then
+if [ "X${OUTPUT}" == "X" ]; then
     exit 0
 fi
 
