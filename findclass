@@ -30,12 +30,14 @@ FILE=$(echo $FILE |expand_find_pat)
 
 GREP_RE="\(class\|struct\)[[:space:]]\+\([[:alnum:]_]\+[[:space:]]\+\)\?${CLASS}[[:space:]]*\([:{]\|$\)"
 
-
-OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n)
+ 
+#echo "find $DIR $FILE | xargs grep $GREP_RE -n -H"
+OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n -H)
 if [ "X${OUTPUT}" == "X" ]; then
     exit 0
 fi
 
+#echo $OUTPUT
 # Change line form for vi input, and highlight the file path, line and class of grep
 echo "$OUTPUT" | gawk -v class=$CLASS -F: \
     'BEGIN{\
@@ -46,10 +48,11 @@ echo "$OUTPUT" | gawk -v class=$CLASS -F: \
         white="\033[0;37m"\
     } \
     {\
-        for(i=3;i<=NF;i++)\
-            {line=file$i} \
+        line=$3; \
+        for(i=4;i<=NF;i++)\
+            {line=(line ":" $i); line} \
         gsub(classrep,red class white, line); \
-        print green $1 blue " +" $2 white" : "line\
+        print green $1 blue " +" $2 white" --> "line\
     }'
 
 tput sgr0
