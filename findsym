@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Prohibit *, ? file expansion 
+set -o noglob
+
+PROG_DIR=$(dirname $(readlink -f $0))
+
+DIR='./'
+FILE='*.h|*.cpp|*.cc'
+if (($# == 3)); then
+    DIR=$1
+    FILE=$2
+    SYMBOL=$3
+elif (($# == 2)); then
+    FILE=$1
+    SYMBOL=$2
+elif (($# == 1)); then
+    SYMBOL=$1
+elif (($# == 0)); then
+    echo -e " 
+Search directory for class or struct.
+
+USAGE: $(basename $0) [dir] [file_pattern] <symbol_pattern>
+    dir\t\t\t Directory to search. ./ if omitted.
+    file_pattern\t Source file to search, can be '*.h|*.cpp'. '*.h|*.cpp|*.cc' if omitted.
+    symbol_pattern\t Symbol of class or struct to search
+"
+    exit 1
+fi
+
+FILE=$(echo $FILE |expand_find_pat)
+
+GREP_RE="\<${SYMBOL}\>"
+
+ 
+echo "find $DIR $FILE | xargs grep $GREP_RE -n -H"
+OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n -H)
+if [ "X${OUTPUT}" == "X" ]; then
+    exit 0
+fi
+
+#echo $OUTPUT
+# Change line form for vi input, and highlight the file path, line and class of grep
+echo "$OUTPUT" | gawk -v symbol=${SYMBOL} -f ${PROG_DIR}/grep_highlight
+tput sgr0
