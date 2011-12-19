@@ -3,6 +3,8 @@
 # Prohibit *, ? file expansion 
 set -o noglob
 
+PROG_DIR=$(dirname $(readlink -f $0))
+
 DIR='./'
 FILE='*.h'
 if (($# == 3)); then
@@ -39,20 +41,5 @@ fi
 
 #echo $OUTPUT
 # Change line form for vi input, and highlight the file path, line and class of grep
-echo "$OUTPUT" | gawk -v class=$CLASS -F: \
-    'BEGIN{\
-        classrep="\\<"class"\\>"; \
-        red="\033[0;31m"; \
-        green="\033[0;32m"; \
-        blue="\033[0;34m"; \
-        white="\033[0;37m"\
-    } \
-    {\
-        line=$3; \
-        for(i=4;i<=NF;i++)\
-            {line=(line ":" $i); line} \
-        gsub(classrep,red class white, line); \
-        print green $1 blue " +" $2 white" --> "line\
-    }'
-
+echo "$OUTPUT" | gawk -v symbol=$CLASS -f ${PROG_DIR}/grep_highlight
 tput sgr0
