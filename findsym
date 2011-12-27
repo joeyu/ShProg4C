@@ -33,7 +33,7 @@ FILE=$(echo $FILE |expand_find_pat)
 GREP_RE="\<${SYMBOL}\>"
 
  
-echo "find $DIR $FILE | xargs grep $GREP_RE -n -H"
+#echo "find $DIR $FILE | xargs grep $GREP_RE -n -H"
 OUTPUT=$(find $DIR $FILE | xargs grep $GREP_RE -n -H)
 if [ "X${OUTPUT}" == "X" ]; then
     exit 0
