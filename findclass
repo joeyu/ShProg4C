@@ -6,7 +6,7 @@ set -o noglob
 PROG_DIR=$(dirname $(readlink -f $0))
 
 DIR='./'
-FILE='*.h'
+FILE='*.h|*.hpp'
 if (($# == 3)); then
     DIR=$1
     FILE=$2
