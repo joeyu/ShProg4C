@@ -1,0 +1,64 @@
+#!/usr/bin/python3
+
+import sys
+import re
+
+CODE={
+    'ENDC':'\033[%sm'%0,  # RESET COLOR
+    'BOLD':'\033[%sm'%1,
+    'UNDERLINE':'\033[%sm'%4,
+    'BLINK':'\033[%sm'%5,
+    'INVERT':'\033[%sm'%7,
+    'CONCEALD':'\033[%sm'%8,
+    'STRIKE':'\033[%sm'%9,
+    'GREY30':'\033[%sm'%90,
+    'GREY40':'\033[%sm'%2,
+    'GREY65':'\033[%sm'%37,
+    'GREY70':'\033[%sm'%97,
+    'GREY20_BG':'\033[%sm'%40,
+    'GREY\033_BG':'33[%sm'%100,
+    'GREY80_BG':'\033[%sm'%47,
+    'GREY93_BG':'\033[%sm'%107,
+    'DARK_RED':'\033[%sm'%31,
+    'RED':'\033[%sm'%91,
+    'RED_BG':'\033[%sm'%41,
+    'LIGHT_RED_BG':'\033[%sm'%101,
+    'DARK_YELLOW':'\033[%sm'%33,
+    'YELLOW':'\033[%sm'%93,
+    'YELLOW_BG':'\033[%sm'%43,
+    'LIGHT_YELLOW_BG':'\033[%sm'%103,
+    'DARK_BLUE':'\033[%sm'%34,
+    'BLUE':'\033[%sm'%94,
+    'BLUE_BG':'\033[%sm'%44,
+    'LIGHT_BLUE_BG':'\033[%sm'%104,
+    'DARK_MAGENTA':'\033[%sm'%35,
+    'PURPLE':'\033[%sm'%95,
+    'MAGENTA_BG':'\033[%sm'%45,
+    'LIGHT_PURPLE_BG':'\033[%sm'%105,
+    'DARK_CYAN':'\033[%sm'%36,
+    'AUQA':'\033[%sm'%96,
+    'CYAN_BG':'\033[%sm'%46,
+    'LIGHT_AUQA_BG':'\033[%sm'%106,
+    'DARK_GREEN':'\033[%sm'%32,
+    'GREEN':'\033[%sm'%92,
+    'GREEN_BG':'\033[%sm'%42,
+    'LIGHT_GREEN_BG':'\033[%sm'%102,
+    'BLACK':'\033[%sm'%30,
+}
+
+if __name__=='__main__':
+    search_pattern = sys.argv[1]
+    search_prog = re.compile(search_pattern)
+    for line in sys.stdin:
+        m = search_prog.search(line)
+        if m is None:
+            print(line, end='')
+        else:
+            start_pos = m.start()
+            end_pos = m.end()
+            before_match = line[:start_pos] 
+            hl_match = CODE['RED'] + line[start_pos:end_pos] + CODE['ENDC']
+            after_match = line[end_pos:]
+
+            print(before_match + hl_match + after_match, end='')
+
